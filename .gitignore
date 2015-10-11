@@ -4,6 +4,7 @@ __pycache__/
 *.csv
 *.zip
 *.pdf
+*.txt
 
 # C extensions
 *.so
