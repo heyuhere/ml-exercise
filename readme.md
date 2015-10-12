@@ -125,17 +125,25 @@ More in-depth analysis on the experimented models follow below:
 
 ### Notes
 
-- Challenges
-  - Environment issue: While trying to apply non-linear techniques, I kept getting `segmentation fault: 11`.
-  - Resources issue: When the above error was not thrown, memory was maxed out even though all the 64-bit data was converted to 32-bit to save some space. In other words, even cutting data size by half did not seem to help as I kept reaching the memory limit. And I suspect it might be because of the nature of Python. It consumes more memory than other languages. I did not think I would run into this kind of issue with 100K by 500 data set and thus chose python, but since it does, I might look at other platforms next time.
-- Assumption
- #6 in `IMPORTANT ADDITIONAL NOTES` in the instructions, it states that
- ```
- For each record, there are two target/dependent variables
+#### Challenges
+- Environment issue: While trying to apply non-linear techniques, I kept getting `segmentation fault: 11`.
+- Resources issue: When the above error was not thrown, memory was maxed out even though all the 64-bit data was converted to 32-bit to save some space. In other words, even cutting data size by half did not seem to help as I kept reaching the memory limit. And I suspect it might be because of the nature of Python. It consumes more memory than other languages. I did not think I would run into this kind of issue with 100K by 500 data set and thus chose python, but since it does, I might look at other platforms next time.
+
+#### Assumption
+#6 in `IMPORTANT ADDITIONAL NOTES` in the instructions, it states that
+```
+For each record, there are two target/dependent variables
 (field names: TARGET_B and TARGET_D). TARGET_B is a binary variable
 indicating whether or not the record responded to the promotion of
 interest ("97NK" mailing) while TARGET_D contains the donation amount
 (dollar) and is only observed for those that responded to the
 promotion. **Neither of these should be used to train the model**.
- ```
- But since this is a classification, regression problem, dependent variable (Y) is required. My modeling is based on the assumption that the two target variables can be used to train the model.
+```
+But since this is a classification, regression problem, dependent variable (Y) is required. My modeling is based on the assumption that the two target variables can be used to train the model.
+
+#### Other directions of analysis
+
+After running into environment issues and limitations from resources, I came to think about other approaches that I could take to get better performance and stability. This still may not work as it is just a theory, but I think there is a good chance it still will as it is designed to take less resources.
+- Kernel trick with RBF: The variables seem to have non-linear relationships that can only be exploited by proper non-linear models. RBF can fit to any shape of data distribution and so is a good option to explore.
+- step-wise feature selection: At every round, select one variable with the highest score. Variables will be added until the model meets stop criteria. (# of variables, % of variance explained, accuracy, etc) This may result in longer execution time, but will take less resources.
+- SGD or SVM: Since RBF kernel would be already applied above, the model would not need to be non-linear. SGD is a linear model that provides super fast online learning. It is known to scale well to a cluster of machines. The reason SVM might be still worth a shot is its adaptibility to high-dimensional space.
